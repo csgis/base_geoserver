@@ -1,0 +1,77 @@
+version: '3.9'
+
+services:
+
+  traefik:
+    image: "traefik:v2.3"
+    command:
+      - --api.insecure=false
+      - --providers.docker
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker.exposedbydefault=false
+      - --certificatesresolvers.leresolver.acme.email=toni.schoenbuchner@cuprit.net
+      - --certificatesresolvers.leresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.leresolver.acme.tlschallenge=true    
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - le-certs:/letsencrypt
+    labels:
+      - "traefik.enable=true"
+
+      # global redirect to https
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+
+      # middleware redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+
+  db:
+    image: kartoza/postgis:14-3.1
+    volumes:
+      - geo-db-data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=gis,gwc
+      - POSTGRES_USER=docker
+      - POSTGRES_PASS=docker
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - POSTGRES_PORT=32767
+    restart: on-failure
+    healthcheck:
+      test: "exit 0"
+
+  geoserver:
+    build: ./geoserver
+          #image: oscarfonts/geoserver
+    links:
+      - db
+    expose:
+      - 8080
+      - 8443
+    volumes:
+      - ./geoserver-exts:/var/local/geoserver-exts/
+    environment:
+      - GEOSERVER_ADMIN_PASSWORD=ge0server
+      - GEOSERVER_CSRF_DISABLED=true
+      - SAMLPLE_DATA=true
+      - SET_PASSWORD_ON_UP=true
+      - PROXY_BASE=https://traefik-a.cuprit.net/geoserver
+      - CATALINA_OPTS=-server -Djava.awt.headless=true -Xms2G -Xmx5G -XX:+UseConcMarkSweepGC -XX:NewSize=48m -DGEOSERVER_DATA_DIR=/var/local/geoserver
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik-a.cuprit.net`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certresolver=leresolver"
+
+volumes:
+  geo-db-data:
+  le-certs:
