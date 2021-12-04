@@ -27,17 +27,15 @@ _headline "GEOSERVER CUSTOM CONFIGURATION START"
 grep -q proxyBaseUrl $GLOBAL_XML
 if [ $? -eq 0 ]
 then
-	echo "proxy base definition is present!"
-	echo ${PROXY_BASE}
-	sed -i  -e "s#\(<proxyBaseUrl>\).*\(<\/proxyBaseUrl>\)#<proxyBaseUrl>${PROXY_BASE}<\/proxyBaseUrl>#g"
-	cat $GLOBAL_XML
+	echo "proxy base definition is present! Will Update proxyBaseUrl"
+	sed -i -e "s|\(<proxyBaseUrl>\).*\(</proxyBaseUrl>\)|<proxyBaseUrl>${PROXY_BASE}</proxyBaseUrl>|" $GLOBAL_XML
 else
-	echo "proxy base definition is not present!"
-	echo ${PROXY_BASE}
-        sed -i "s#<onlineResource>http://geoserver.org</onlineResource>#<onlineResource>http://geoserver.org</onlineResource>\n<proxyBaseUrl>${PROXY_BASE}</proxyBaseUrl>#g" $GLOBAL_XML
-	cat $GLOBAL_XML
+	echo "proxy base definition is not present! Will add proxyBaseUrl"
+        sed -i -e "s|<onlineResource>http://geoserver.org</onlineResource>|& \n<proxyBaseUrl>${PROXY_BASE}</proxyBaseUrl>|" $GLOBAL_XML
 fi
 
+echo "Proxy base is: ${PROXY_BASE} \n"
+cat $GLOBAL_XML
 
 # UPDATE ADMIN PASSWORD ---------------------------------------
 cp $USERS_XML "$USERS_XML.orig"
