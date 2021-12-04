@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# 	THIS SCRIPT WILL TAKE CARE FOR THE FOLLOWING:
+# 	1. SET OR UPDATE proxyBaseUrl
+# 	2. UPDATE THE ADMIN PASSORD (currently only the password not the username: admin)
+# 	3. SET A NEEED VARIABLE FOR GWC WORKING WITH GEOFENCE
+
 # PATH DEFINITIONS ------------------------------------------
 CLASSPATH=/usr/local/geoserver/WEB-INF/lib/
 GEOFENCE_EXTENSION_DIR=/var/local/geoserver-exts/geofence
@@ -28,7 +33,7 @@ make_hash(){
 _headline "GEOSERVER CUSTOM CONFIGURATION START"
 
 
-# UPGRADE PROXYBASE URL --------------------------------------
+# 1. UPGRADE PROXYBASE URL --------------------------------------
 grep -q proxyBaseUrl $GLOBAL_XML
 if [ $? -eq 0 ]
 then
@@ -43,7 +48,7 @@ echo "Proxy base is: ${PROXY_BASE} \n"
 cat $GLOBAL_XML
 
 
-# UPDATE ADMIN PASSWORD ---------------------------------------
+# 2. UPDATE ADMIN PASSWORD ---------------------------------------
 cp $USERS_XML "$USERS_XML.orig"
 
 if [ "$SET_PASSWORD_ON_UP" = true ] ; then
@@ -57,7 +62,7 @@ if [ "$SET_PASSWORD_ON_UP" = true ] ; then
 fi
 
 
-# ENABLE GWC WITH GF -------------------------------------------
+# 3. ENABLE GWC WITH GF -------------------------------------------
 if [ -d "$GEOFENCE_EXTENSION_DIR" ]; then
    _headline "update gefence regarding geowebcache\n"
    mkdir -p $GS_DIR
