@@ -18,7 +18,7 @@ USERS_XML=/var/local/geoserver/security/usergroup/default/users.xml
 CLASSPATH=/usr/local/geoserver/WEB-INF/lib/
 GS_DIR=/var/local/geoserver/geofence/
 GS_PROPERTIES=/var/local/geoserver/geofence/geofence-server.properties
-GEOFENCE_EXTENSION_DIR="/var/local/geoserver-exts/geofence"
+GEOFENCE_EXTENSION_DIR=/var/local/geoserver-exts/geofence
 
 # UPGRADE PROXYBASE URL --------------------------------------
 grep -q proxyBaseUrl $GLOBAL_XML
