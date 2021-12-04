@@ -1,6 +1,13 @@
-# SCRIPT TO CUSTOMIZE THE PARENT GEOSERVER -------------------
+!#/bin/sh
 
-echo "\n----------- GEOSERVER CUSTOM CONFIGURATION START  -----------\n"
+# SCRIPT TO CUSTOMIZE THE PARENT GEOSERVER -------------------
+_headline() { 
+      printf %0$((40))d\\n | tr 0 \# ;
+      echo "$1"
+      printf %0$((40))d\\n | tr 0 \# ;
+  }
+
+_headline "GEOSERVER CUSTOM CONFIGURATION START"
 echo "GEOSERVER CUSTOM CONFIGURATION"
 echo "PROXY BASE IS: ${PROXY_BASE}"
 
@@ -12,12 +19,12 @@ GLOBAL_XML=/var/local/geoserver/global.xml
 grep -q proxyBaseUrl $GLOBAL_XML
 if [ $? -eq 0 ]
 then
-	echo "\n----------- proxy base definition is present -----------\n"
+	_headline "proxy base definition is present"
 	echo ${PROXY_BASE}
 	sed -i  -e "s#\(<proxyBaseUrl>\).*\(<\/proxyBaseUrl>\)#<proxyBaseUrl>${PROXY_BASE}<\/proxyBaseUrl>#g"
 	cat $GLOBAL_XML
 else
-	echo "\n----------- proxy base definition is not present -----------\n"
+	_headline "proxy base definition is not present"
 	echo ${PROXY_BASE}
         sed -i "s#<onlineResource>http://geoserver.org</onlineResource>#<onlineResource>http://geoserver.org</onlineResource>\n<proxyBaseUrl>${PROXY_BASE}</proxyBaseUrl>#g" $GLOBAL_XML
 	cat $GLOBAL_XML
@@ -26,7 +33,6 @@ fi
 # UPDATE ADMIN PASSWORD ---------------------------------------
 USERS_XML=/var/local/geoserver/security/usergroup/default/users.xml 
 CLASSPATH=/usr/local/geoserver/WEB-INF/lib/
-
 cp $USERS_XML "$USERS_XML.orig"
 
 make_hash(){
@@ -35,11 +41,11 @@ make_hash(){
 }
 
 if [ "$SET_PASSWORD_ON_UP" = true ] ; then
-   echo "\n----------- password configuration ------------\n"
-   echo "Updating geoserver admin password with: $GEOSERVER_ADMIN_PASSWORD"
-   echo "\n----------- hash is ------------\n"
+   _headline "password configuration"
    PWD_HASH=$(make_hash $GEOSERVER_ADMIN_PASSWORD)
-   echo $PWD_HASH
+
+   echo "Updating geoserver admin password with: $GEOSERVER_ADMIN_PASSWORD\n"
+   echo "hash is: $PWD_HASH \n"
    sed -i -e "s| password=\".*\"| password=\"${PWD_HASH}\"|g" $USERS_XML
    cat $USERS_XML
 fi
@@ -49,15 +55,15 @@ fi
 GS_DIR=/var/local/geoserver/geofence/
 GS_PROPERTIES=/var/local/geoserver/geofence/geofence-server.properties
 
-echo "\n----------- update gf -----------\n"
+_headline "update gf"
 mkdir -p $GS_DIR
 touch $GS_PROPERTIES
 if ! grep -q "gwc.context.suffix=gwc" $GS_PROPERTIES; then
-    echo "suffix not present ... adding it"
+    echo "suffix not present ... adding it\n"
     echo gwc.context.suffix=gwc >> $GS_PROPERTIES
 fi
 
-echo "\n----------- GEOSERVER CUSTOM CONFIGURATION END -----------\n"
+_headline "GEOSERVER CUSTOM CONFIGURATION END"
 
 
 # run the parent entrypoint ------------------------------------
