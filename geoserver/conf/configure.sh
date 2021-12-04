@@ -5,18 +5,20 @@
 # 	2. UPDATE THE ADMIN PASSORD (currently only the password not the username: admin)
 # 	3. SET A NEEED VARIABLE FOR GWC WORKING WITH GEOFENCE
 
-# PATH DEFINITIONS ------------------------------------------
-CLASSPATH=/usr/local/geoserver/WEB-INF/lib/
-GEOFENCE_EXTENSION_DIR=/var/local/geoserver-exts/geofence
-GEOSERVER_DATA=/var/local/geoserver
 
-GLOBAL_XML=${GEOSERVER_DATA}/global.xml
-USERS_XML=${GEOSERVER_DATA}/security/usergroup/default/users.xml 
-GS_DIR=${GEOSERVER_DATA}/geofence/
-GS_PROPERTIES=${GEOSERVER_DATA}/geofence/geofence-server.properties
+# PATH DEFINITIONS ------------------------------------------
+
+CLASSPATH=${GEOSERVER_INSTALL_DIR}/WEB-INF/lib/
+GEOFENCE_EXTENSION_DIR=${GEOSERVER_EXT_DIR}/geofence
+GS_DIR=${GEOSERVER_DATA_DIR}/geofence/
+
+GLOBAL_XML=${GEOSERVER_DATA_DIR}/global.xml
+USERS_XML=${GEOSERVER_DATA_DIR}/security/usergroup/default/users.xml 
+GS_PROPERTIES=${GEOSERVER_DATA_DIR}/geofence/geofence-server.properties
 
 
 # FUNCTIONS --------------------------------------------------
+
 _headline() { 
       printf %0$((40))d\\n | tr 0 \# ;
       echo "$1"
@@ -29,11 +31,11 @@ make_hash(){
     (echo "digest1:" && java -classpath $(find $CLASSPATH -regex ".*jasypt-[0-9]\.[0-9]\.[0-9].*jar") org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$NEW_PASSWORD" verbose=0) | tr -d '\n'
 }
 
-
 _headline "GEOSERVER CUSTOM CONFIGURATION START"
 
 
 # 1. UPGRADE PROXYBASE URL --------------------------------------
+
 grep -q proxyBaseUrl $GLOBAL_XML
 if [ $? -eq 0 ]
 then
@@ -49,6 +51,7 @@ cat $GLOBAL_XML
 
 
 # 2. UPDATE ADMIN PASSWORD ---------------------------------------
+
 cp $USERS_XML "$USERS_XML.orig"
 
 if [ "$SET_PASSWORD_ON_UP" = true ] ; then
@@ -63,6 +66,7 @@ fi
 
 
 # 3. ENABLE GWC WITH GF -------------------------------------------
+
 if [ -d "$GEOFENCE_EXTENSION_DIR" ]; then
    _headline "update gefence regarding geowebcache\n"
    mkdir -p $GS_DIR
@@ -75,6 +79,7 @@ fi
 
 
 # run the parent entrypoint ------------------------------------
+
 _headline "GEOSERVER CUSTOM CONFIGURATION END"
 /bin/sh /usr/local/bin/start.sh
 
