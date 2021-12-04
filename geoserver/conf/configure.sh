@@ -1,4 +1,4 @@
-!#/bin/sh
+#!/bin/sh
 
 # SCRIPT TO CUSTOMIZE THE PARENT GEOSERVER -------------------
 _headline() { 
@@ -6,6 +6,11 @@ _headline() {
       echo "$1"
       printf %0$((40))d\\n | tr 0 \# ;
   }
+
+make_hash(){
+    NEW_PASSWORD=$1
+    (echo "digest1:" && java -classpath $(find $CLASSPATH -regex ".*jasypt-[0-9]\.[0-9]\.[0-9].*jar") org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$NEW_PASSWORD" verbose=0) | tr -d '\n'
+}
 
 _headline "GEOSERVER CUSTOM CONFIGURATION START"
 echo "GEOSERVER CUSTOM CONFIGURATION"
@@ -38,11 +43,6 @@ fi
 
 # UPDATE ADMIN PASSWORD ---------------------------------------
 cp $USERS_XML "$USERS_XML.orig"
-
-make_hash(){
-    NEW_PASSWORD=$1
-    (echo "digest1:" && java -classpath $(find $CLASSPATH -regex ".*jasypt-[0-9]\.[0-9]\.[0-9].*jar") org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$NEW_PASSWORD" verbose=0) | tr -d '\n'
-}
 
 if [ "$SET_PASSWORD_ON_UP" = true ] ; then
    _headline "password configuration"
