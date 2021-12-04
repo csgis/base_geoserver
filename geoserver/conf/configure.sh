@@ -12,10 +12,15 @@ echo "GEOSERVER CUSTOM CONFIGURATION"
 echo "PROXY BASE IS: ${PROXY_BASE}"
 
 
+# PATH DEFINITIONS ------------------------------------------
+GLOBAL_XML=/var/local/geoserver/global.xml
+USERS_XML=/var/local/geoserver/security/usergroup/default/users.xml 
+CLASSPATH=/usr/local/geoserver/WEB-INF/lib/
+GS_DIR=/var/local/geoserver/geofence/
+GS_PROPERTIES=/var/local/geoserver/geofence/geofence-server.properties
+GEOFENCE_EXTENSION_DIR="/var/local/geoserver-exts/geofence"
 
 # UPGRADE PROXYBASE URL --------------------------------------
-GLOBAL_XML=/var/local/geoserver/global.xml
-
 grep -q proxyBaseUrl $GLOBAL_XML
 if [ $? -eq 0 ]
 then
@@ -30,9 +35,8 @@ else
 	cat $GLOBAL_XML
 fi
 
+
 # UPDATE ADMIN PASSWORD ---------------------------------------
-USERS_XML=/var/local/geoserver/security/usergroup/default/users.xml 
-CLASSPATH=/usr/local/geoserver/WEB-INF/lib/
 cp $USERS_XML "$USERS_XML.orig"
 
 make_hash(){
@@ -52,20 +56,18 @@ fi
 
 
 # ENABLE GWC WITH GF -------------------------------------------
-GS_DIR=/var/local/geoserver/geofence/
-GS_PROPERTIES=/var/local/geoserver/geofence/geofence-server.properties
-
-_headline "update gf"
-mkdir -p $GS_DIR
-touch $GS_PROPERTIES
-if ! grep -q "gwc.context.suffix=gwc" $GS_PROPERTIES; then
-    echo "suffix not present ... adding it\n"
-    echo gwc.context.suffix=gwc >> $GS_PROPERTIES
+if [ -d "$GEOFENCE_EXTENSION_DIR" ]; then
+   _headline "update gefence regarding geowebcache\n"
+   mkdir -p $GS_DIR
+   touch $GS_PROPERTIES
+   if ! grep -q "gwc.context.suffix=gwc" $GS_PROPERTIES; then
+       echo "suffix not present ... adding it\n"
+       echo gwc.context.suffix=gwc >> $GS_PROPERTIES
+   fi
 fi
-
-_headline "GEOSERVER CUSTOM CONFIGURATION END"
 
 
 # run the parent entrypoint ------------------------------------
+_headline "GEOSERVER CUSTOM CONFIGURATION END"
 /bin/sh /usr/local/bin/start.sh
 
