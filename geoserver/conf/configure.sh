@@ -15,6 +15,7 @@ _headline() {
       printf %0$((40))d\\n | tr 0 \# ;
   }
 
+# Taken from https://github.com/kartoza/docker-geoserver/ which took it from geosolutions ;)
 make_hash(){
     NEW_PASSWORD=$1
     (echo "digest1:" && java -classpath $(find $CLASSPATH -regex ".*jasypt-[0-9]\.[0-9]\.[0-9].*jar") org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$NEW_PASSWORD" verbose=0) | tr -d '\n'
