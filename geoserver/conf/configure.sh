@@ -1,9 +1,10 @@
 #!/bin/sh
 
-# 	THIS SCRIPT WILL TAKE CARE FOR THE FOLLOWING:
-# 	1. SET OR UPDATE proxyBaseUrl
-# 	2. UPDATE THE ADMIN PASSORD (currently only the password not the username: admin)
-# 	3. SET A NEEED VARIABLE FOR GWC WORKING WITH GEOFENCE
+# THIS SCRIPT WILL TAKE CARE FOR THE FOLLOWING:
+# ~~~~~	1. SET OR UPDATE proxyBaseUrl
+# ~~~~~	2. UPDATE THE ADMIN PASSORD (currently only the password not the username: admin)
+# ~~~~~	3. SET A NEEED VARIABLE FOR GWC WORKING WITH GEOFENCE
+# author: toni.schoenbuchner@csgis.de
 
 
 # PATH DEFINITIONS ------------------------------------------
