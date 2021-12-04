@@ -1,12 +1,15 @@
 #!/bin/sh
 
 # PATH DEFINITIONS ------------------------------------------
-GLOBAL_XML=/var/local/geoserver/global.xml
-USERS_XML=/var/local/geoserver/security/usergroup/default/users.xml 
 CLASSPATH=/usr/local/geoserver/WEB-INF/lib/
-GS_DIR=/var/local/geoserver/geofence/
-GS_PROPERTIES=/var/local/geoserver/geofence/geofence-server.properties
 GEOFENCE_EXTENSION_DIR=/var/local/geoserver-exts/geofence
+GEOSERVER_DATA=/var/local/geoserver
+
+GLOBAL_XML=${GEOSERVER_DATA}/global.xml
+USERS_XML=${GEOSERVER_DATA}/security/usergroup/default/users.xml 
+GS_DIR=${GEOSERVER_DATA}/geofence/
+GS_PROPERTIES=${GEOSERVER_DATA}/geofence/geofence-server.properties
+
 
 # FUNCTIONS --------------------------------------------------
 _headline() { 
@@ -15,7 +18,7 @@ _headline() {
       printf %0$((40))d\\n | tr 0 \# ;
   }
 
-# Taken from https://github.com/kartoza/docker-geoserver/ which took it from geosolutions ;)
+# Taken from https://github.com/kartoza/docker-geoserver/ who took it from geosolutions ;)
 make_hash(){
     NEW_PASSWORD=$1
     (echo "digest1:" && java -classpath $(find $CLASSPATH -regex ".*jasypt-[0-9]\.[0-9]\.[0-9].*jar") org.jasypt.intf.cli.JasyptStringDigestCLI digest.sh algorithm=SHA-256 saltSizeBytes=16 iterations=100000 input="$NEW_PASSWORD" verbose=0) | tr -d '\n'
@@ -23,6 +26,7 @@ make_hash(){
 
 
 _headline "GEOSERVER CUSTOM CONFIGURATION START"
+
 
 # UPGRADE PROXYBASE URL --------------------------------------
 grep -q proxyBaseUrl $GLOBAL_XML
@@ -37,6 +41,7 @@ fi
 
 echo "Proxy base is: ${PROXY_BASE} \n"
 cat $GLOBAL_XML
+
 
 # UPDATE ADMIN PASSWORD ---------------------------------------
 cp $USERS_XML "$USERS_XML.orig"
