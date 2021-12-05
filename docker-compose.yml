@@ -63,7 +63,7 @@ services:
       - GEOSERVER_CSRF_DISABLED=true
       - SAMLPLE_DATA=true
       - SET_PASSWORD_ON_UP=true
-      - PROXY_BASE=https://traefik-a.cuprit.net/geoserver
+      - PROXY_BASE=https://traefik-a.cuprit.net
       - CATALINA_OPTS=-server -Djava.awt.headless=true -Xms2G -Xmx5G -XX:+UseConcMarkSweepGC -XX:NewSize=48m -DGEOSERVER_DATA_DIR=/var/local/geoserver
     labels:
       - "traefik.enable=true"
