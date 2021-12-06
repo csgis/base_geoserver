@@ -13,7 +13,8 @@ Compared to the upstream project this composition adds the following:
 
 Set correct values for
 - .env -> SITE_URL
-- geoserver.env -> PROXY_URL (= SITE_URL with https://)
+- .geoserver -> PROXY_URL (= SITE_URL with https://)
+- .db -> passwords; db names ...
 
 ```
 docker-compose build
