@@ -12,8 +12,8 @@ Compared to the upstream project this composition adds the following:
 ## Run it
 
 Set correct values for
-.env -> SITE_URL
-geoserver.env -> PROXY_URL (= SITE_URL with https://)
+- .env -> SITE_URL
+- geoserver.env -> PROXY_URL (= SITE_URL with https://)
 
 ```
 docker-compose build
