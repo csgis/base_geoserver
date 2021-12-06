@@ -14,13 +14,13 @@ GEOFENCE_EXTENSION_DIR=${GEOSERVER_EXT_DIR}/geofence
 GS_DIR=${GEOSERVER_DATA_DIR}/geofence/
 
 GLOBAL_XML=${GEOSERVER_DATA_DIR}/global.xml
-USERS_XML=${GEOSERVER_DATA_DIR}/security/usergroup/default/users.xml 
+USERS_XML=${GEOSERVER_DATA_DIR}/security/usergroup/default/users.xml
 GS_PROPERTIES=${GEOSERVER_DATA_DIR}/geofence/geofence-server.properties
 
 
 # FUNCTIONS --------------------------------------------------
 
-_headline() { 
+_headline() {
       printf %0$((40))d\\n | tr 0 \# ;
       echo "$1"
       printf %0$((40))d\\n | tr 0 \# ;
@@ -41,13 +41,13 @@ grep -q proxyBaseUrl $GLOBAL_XML
 if [ $? -eq 0 ]
 then
 	echo "proxy base definition is present! Will Update proxyBaseUrl"
-	sed -i -e "s|\(<proxyBaseUrl>\).*\(</proxyBaseUrl>\)|<proxyBaseUrl>${PROXY_BASE}</proxyBaseUrl>|" $GLOBAL_XML
+	sed -i -e "s|\(<proxyBaseUrl>\).*\(</proxyBaseUrl>\)|<proxyBaseUrl>${SITE_URL}</proxyBaseUrl>|" $GLOBAL_XML
 else
 	echo "proxy base definition is not present! Will add proxyBaseUrl"
-        sed -i -e "s|<onlineResource>http://geoserver.org</onlineResource>|& \n<proxyBaseUrl>${PROXY_BASE}</proxyBaseUrl>|" $GLOBAL_XML
+        sed -i -e "s|<onlineResource>http://geoserver.org</onlineResource>|& \n<proxyBaseUrl>${SITE_URL}</proxyBaseUrl>|" $GLOBAL_XML
 fi
 
-echo "Proxy base is: ${PROXY_BASE} \n"
+echo "Proxy base is: ${SITE_URL} \n"
 cat $GLOBAL_XML
 
 
@@ -83,4 +83,3 @@ fi
 
 _headline "GEOSERVER CUSTOM CONFIGURATION END"
 /bin/sh /usr/local/bin/start.sh
-
