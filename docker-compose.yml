@@ -36,7 +36,7 @@ services:
     image: kartoza/postgis:14-3.1
     env_file:
       - .env
-      - db.env
+      - .db
     volumes:
       - geo-db-data:/var/lib/postgresql
     ports:
@@ -49,8 +49,8 @@ services:
     build: ./geoserver
     #image: oscarfonts/geoserver
     env_file:
-      - .env 
-      - geoserver.env
+      - .env
+      - .geoserver
     links:
       - db
     expose:
