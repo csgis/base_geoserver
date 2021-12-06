@@ -7,7 +7,7 @@ Compared to the upstream project this composition adds the following:
 - enable https via a traefik proxy service
 - automaticully sets the correct proxyBaseUrl in geoserver
 - allows to auto update the admin password based on .env
-- sets a var for gwc working with geofence
+- sets a needed configuration for gwc working with geofence
 
 ## Run it
 
