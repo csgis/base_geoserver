@@ -41,13 +41,13 @@ grep -q proxyBaseUrl $GLOBAL_XML
 if [ $? -eq 0 ]
 then
 	echo "proxy base definition is present! Will Update proxyBaseUrl"
-	sed -i -e "s|\(<proxyBaseUrl>\).*\(</proxyBaseUrl>\)|<proxyBaseUrl>${SITE_URL}</proxyBaseUrl>|" $GLOBAL_XML
+	sed -i -e "s|\(<proxyBaseUrl>\).*\(</proxyBaseUrl>\)|<proxyBaseUrl>${PROXY_BASE}</proxyBaseUrl>|" $GLOBAL_XML
 else
 	echo "proxy base definition is not present! Will add proxyBaseUrl"
-        sed -i -e "s|<onlineResource>http://geoserver.org</onlineResource>|& \n<proxyBaseUrl>${SITE_URL}</proxyBaseUrl>|" $GLOBAL_XML
+        sed -i -e "s|<onlineResource>http://geoserver.org</onlineResource>|& \n<proxyBaseUrl>${PROXY_BASE}</proxyBaseUrl>|" $GLOBAL_XML
 fi
 
-echo "Proxy base is: ${SITE_URL} \n"
+echo "Proxy base is: ${PROXY_BASE} \n"
 cat $GLOBAL_XML
 
 

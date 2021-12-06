@@ -34,12 +34,13 @@ services:
 
   db:
     image: kartoza/postgis:14-3.1
-    env_file: db.env
+    env_file:
+      - .env
+      - db.env
     volumes:
       - geo-db-data:/var/lib/postgresql
     ports:
       - "5432:5432"
-    environment:
     restart: on-failure
     healthcheck:
       test: "exit 0"
@@ -47,7 +48,9 @@ services:
   geoserver:
     build: ./geoserver
     #image: oscarfonts/geoserver
-    env_file: geoserver.env
+    env_file:
+      - .env 
+      - geoserver.env
     links:
       - db
     expose:
@@ -55,7 +58,6 @@ services:
       - 8443
     volumes:
       - ./geoserver-exts:/var/local/geoserver-exts/
-    environment:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`${SITE_URL}`)"
