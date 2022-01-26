@@ -58,13 +58,20 @@ services:
       - 8443
     volumes:
       - ./geoserver-exts:/var/local/geoserver-exts/
+      - geoserver_data:/var/local/geoserver
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`${SITE_URL}`)"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.tls.certresolver=leresolver"
-
 volumes:
   geo-db-data:
   le-certs:
+   geoserver_data:
+  # client specific
+  #  driver: local
+  #  driver_opts:
+  #    type: 'none'
+  #    o: 'bind'
+  #    device: '/media/base_geoserver_geoserver_data/_data'
