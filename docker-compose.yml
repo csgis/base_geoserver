@@ -68,7 +68,7 @@ services:
 volumes:
   geo-db-data:
   le-certs:
-   geoserver_data:
+  geoserver_data:
   # client specific
   #  driver: local
   #  driver_opts:
