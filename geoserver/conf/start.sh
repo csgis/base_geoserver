@@ -13,7 +13,7 @@ if [ -n "${CUSTOM_GID}" ];then
 fi
 
 #We need this line to ensure that data has the correct rights
-chown -R tomcat:tomcat $(ls ${GEOSERVER_DATA_DIR} -I gwc)
+find ${GEOSERVER_DATA_DIR} -maxdepth 1 -mindepth 1 ! -name 'gwc' -exec chown -R tomcat:tomcat {} +
 chown -R tomcat:tomcat ${GEOSERVER_EXT_DIR}
 
 for ext in `ls -d "${GEOSERVER_EXT_DIR}"/*/`; do

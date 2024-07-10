@@ -2,6 +2,9 @@
 # Must match with .env SITE_URL but needs to name the SCHEME
 PROXY_BASE=https://geoserver-test.cuprit.net
 
+# Needed for new geoserver to run on root
+GEOSERVER_PATH=/
+
 # Disable the csrf check in proxy context
 # In case this is to unsecure in your context
 # create a whitelist in web.xml
@@ -17,4 +20,4 @@ GEOSERVER_ADMIN_PASSWORD=ge0server
 SAMLPLE_DATA=true
 
 # Configure the JVM startup.
-CATALINA_OPTS=-server -Djava.awt.headless=true -Xms2G -Xmx5G -XX:+UseConcMarkSweepGC -XX:NewSize=48m -DGEOSERVER_DATA_DIR=/var/local/geoserver
+CATALINA_OPTS=-server -Djava.awt.headless=true -Xms2G -Xmx5G -XX:NewSize=48m -DGEOSERVER_DATA_DIR=/var/local/geoserver

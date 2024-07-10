@@ -1,4 +1,4 @@
-FROM oscarfonts/geoserver:2.20.1
+FROM oscarfonts/geoserver:2.24.4
 
 # custom configuration
 COPY ./conf/configure.sh  /usr/local/bin/configure.sh
