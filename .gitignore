@@ -1,0 +1,14 @@
+# Local configuration
+.db
+.env
+.geoserver
+
+# Backups
+*.bak
+*_bak/
+
+# Extensions (local)
+geoserver-exts/
+geoserver-exts-2-20/
+geoserver-exts_bak/
+letsencrypt/
