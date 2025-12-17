@@ -3,7 +3,7 @@ version: '3.9'
 services:
 
   traefik:
-    image: "traefik:v2.3"
+    image: "traefik:v3.2"
     command:
       - --api.insecure=false
       - --providers.docker
@@ -20,11 +20,12 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
+    restart: always
     labels:
       - "traefik.enable=true"
 
       # global redirect to https
-      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`.+`)"
       - "traefik.http.routers.http-catchall.entrypoints=web"
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
 
@@ -41,9 +42,7 @@ services:
       - geo-db-data:/var/lib/postgresql
     ports:
       - "5432:5432"
-    restart: on-failure
-    healthcheck:
-      test: "exit 0"
+    restart: always
 
   geoserver:
     build: ./geoserver
@@ -51,27 +50,48 @@ services:
     env_file:
       - .env
       - .geoserver
-    links:
+    depends_on:
       - db
+    restart: always
     expose:
       - 8080
       - 8443
     volumes:
       - ./geoserver-exts:/var/local/geoserver-exts/
       - geoserver_data:/var/local/geoserver
+      # - /media/base_geoserver_geoserver_data/_data:/var/local/geoserver
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`${SITE_URL}`)"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.tls=true"
-      - "traefik.http.routers.traefik.tls.certresolver=leresolver"
+      - "traefik.http.services.geoserver.loadbalancer.server.port=8080"
+      # ============================================================
+      # NEU: XXE-Schutz (CVE-2025-58360) - WMS nur GET erlauben
+      # ============================================================
+      - "traefik.http.routers.geoserver-wms.rule=Host(`${SITE_URL}`) && PathPrefix(`/geoserver/wms`) && Method(`GET`,`HEAD`,`OPTIONS`)"
+      - "traefik.http.routers.geoserver-wms.entrypoints=websecure"
+      - "traefik.http.routers.geoserver-wms.tls=true"
+      - "traefik.http.routers.geoserver-wms.tls.certresolver=leresolver"
+      - "traefik.http.routers.geoserver-wms.priority=100"
+      # ============================================================
+      # GEÄNDERT: Restlicher GeoServer (umbenannt von "traefik" zu "geoserver")
+      # ============================================================
+      - "traefik.http.routers.geoserver.rule=Host(`${SITE_URL}`)"
+      - "traefik.http.routers.geoserver.entrypoints=websecure"
+      - "traefik.http.routers.geoserver.tls=true"
+      - "traefik.http.routers.geoserver.tls.certresolver=leresolver"
+      - "traefik.http.routers.geoserver.priority=50"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+      
 volumes:
   geo-db-data:
   le-certs:
   geoserver_data:
   # client specific
-  #  driver: local
-  #  driver_opts:
-  #    type: 'none'
-  #    o: 'bind'
-  #    device: '/media/base_geoserver_geoserver_data/_data'
+    # driver: local
+    # driver_opts:
+      # type: 'none'
+      # o: 'bind'
+      # device: '/media/base_geoserver_geoserver_data/_data'
