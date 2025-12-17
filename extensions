@@ -34,6 +34,7 @@ pyramid
 #ogr-wps
 #vectortiles
 #xslt
+#flatgeobuf
 
 ############
 # Services #
@@ -45,13 +46,14 @@ pyramid
 #geofence
 geofence-server
 #sldservice
+#wmts-multi-dimensional
 
 ##################
-# Miscellaneouss #
+# Miscellaneous  #
 ##################
 #charts
-#control-flow
-#querylayer # Cross Layer Filtering
+control-flow
+#querylayer
 css
 #cas
 monitor
@@ -60,3 +62,6 @@ monitor
 #inspire
 #printing
 #ysld
+#params-extractor
+#gwc-s3
+#backup-restore

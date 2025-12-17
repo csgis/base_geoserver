@@ -1,14 +1,20 @@
-# Local configuration
-.db
+# Environment files (contain secrets)
 .env
+.db
 .geoserver
 
-# Backups
-*.bak
-*_bak/
-
-# Extensions (local)
+# Downloaded extensions
 geoserver-exts/
-geoserver-exts-2-20/
-geoserver-exts_bak/
+
+# Let's Encrypt certificates
 letsencrypt/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

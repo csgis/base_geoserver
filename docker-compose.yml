@@ -34,7 +34,7 @@ services:
 
 
   db:
-    image: kartoza/postgis:14-3.1
+    image: kartoza/postgis:16-3.4
     env_file:
       - .env
       - .db
@@ -43,28 +43,31 @@ services:
     ports:
       - "5432:5432"
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-docker}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   geoserver:
     build: ./geoserver
-    #image: oscarfonts/geoserver
     env_file:
       - .env
       - .geoserver
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: always
     expose:
       - 8080
-      - 8443
     volumes:
       - ./geoserver-exts:/var/local/geoserver-exts/
       - geoserver_data:/var/local/geoserver
-      # - /media/base_geoserver_geoserver_data/_data:/var/local/geoserver
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.geoserver.loadbalancer.server.port=8080"
       # ============================================================
-      # NEU: XXE-Schutz (CVE-2025-58360) - WMS nur GET erlauben
+      # XXE Protection (CVE-2024-36401) - WMS only GET allowed
       # ============================================================
       - "traefik.http.routers.geoserver-wms.rule=Host(`${SITE_URL}`) && PathPrefix(`/geoserver/wms`) && Method(`GET`,`HEAD`,`OPTIONS`)"
       - "traefik.http.routers.geoserver-wms.entrypoints=websecure"
@@ -72,7 +75,7 @@ services:
       - "traefik.http.routers.geoserver-wms.tls.certresolver=leresolver"
       - "traefik.http.routers.geoserver-wms.priority=100"
       # ============================================================
-      # GEÄNDERT: Restlicher GeoServer (umbenannt von "traefik" zu "geoserver")
+      # Main GeoServer router (lower priority)
       # ============================================================
       - "traefik.http.routers.geoserver.rule=Host(`${SITE_URL}`)"
       - "traefik.http.routers.geoserver.entrypoints=websecure"
@@ -84,14 +87,14 @@ services:
       options:
         max-size: "20m"
         max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/index.html"]
+      start_period: 60s
+      interval: 30s
+      timeout: 10s
+      retries: 5
       
 volumes:
   geo-db-data:
   le-certs:
   geoserver_data:
-  # client specific
-    # driver: local
-    # driver_opts:
-      # type: 'none'
-      # o: 'bind'
-      # device: '/media/base_geoserver_geoserver_data/_data'
