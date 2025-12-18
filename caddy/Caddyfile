@@ -17,7 +17,13 @@
     }
     respond @ows-block "Method Not Allowed" 405
 
-    reverse_proxy geoserver:8080
+    reverse_proxy geoserver:8080 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-Host {host}
+    }
 
     header -Server
 }
