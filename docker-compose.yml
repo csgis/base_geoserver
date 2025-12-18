@@ -2,39 +2,21 @@ version: '3.9'
 
 services:
 
-  traefik:
-    image: "traefik:v3.2"
-    command:
-      - --api.insecure=false
-      - --providers.docker
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --providers.docker.exposedbydefault=false
-      - --certificatesresolvers.leresolver.acme.email=${ADMIN_EMAIL}
-      - --certificatesresolvers.leresolver.acme.storage=/letsencrypt/acme.json
-      - --certificatesresolvers.leresolver.acme.tlschallenge=true
+  caddy:
+    image: caddy:2-alpine
     ports:
       - "80:80"
-      - "8080:8080"
       - "443:443"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./letsencrypt:/letsencrypt"
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    env_file:
+      - .env
     restart: always
-    labels:
-      - "traefik.enable=true"
-
-      # global redirect to https
-      - "traefik.http.routers.http-catchall.rule=HostRegexp(`.+`)"
-      - "traefik.http.routers.http-catchall.entrypoints=web"
-      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-
-      # middleware redirect
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-
 
   db:
-    image: kartoza/postgis:16-3.4
+    image: kartoza/postgis:14-3.1
     env_file:
       - .env
       - .db
@@ -43,11 +25,6 @@ services:
     ports:
       - "5432:5432"
     restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-docker}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   geoserver:
     build: ./geoserver
@@ -55,46 +32,21 @@ services:
       - .env
       - .geoserver
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     restart: always
     expose:
       - 8080
     volumes:
       - ./geoserver-exts:/var/local/geoserver-exts/
       - geoserver_data:/var/local/geoserver
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.geoserver.loadbalancer.server.port=8080"
-      # ============================================================
-      # XXE Protection (CVE-2024-36401) - WMS only GET allowed
-      # ============================================================
-      - "traefik.http.routers.geoserver-wms.rule=Host(`${SITE_URL}`) && PathPrefix(`/geoserver/wms`) && Method(`GET`,`HEAD`,`OPTIONS`)"
-      - "traefik.http.routers.geoserver-wms.entrypoints=websecure"
-      - "traefik.http.routers.geoserver-wms.tls=true"
-      - "traefik.http.routers.geoserver-wms.tls.certresolver=leresolver"
-      - "traefik.http.routers.geoserver-wms.priority=100"
-      # ============================================================
-      # Main GeoServer router (lower priority)
-      # ============================================================
-      - "traefik.http.routers.geoserver.rule=Host(`${SITE_URL}`)"
-      - "traefik.http.routers.geoserver.entrypoints=websecure"
-      - "traefik.http.routers.geoserver.tls=true"
-      - "traefik.http.routers.geoserver.tls.certresolver=leresolver"
-      - "traefik.http.routers.geoserver.priority=50"
     logging:
       driver: "json-file"
       options:
         max-size: "20m"
         max-file: "10"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/index.html"]
-      start_period: 60s
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      
+
 volumes:
   geo-db-data:
-  le-certs:
+  caddy_data:
+  caddy_config:
   geoserver_data:
