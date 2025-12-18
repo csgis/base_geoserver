@@ -5,6 +5,7 @@
 
 # Downloaded extensions
 geoserver-exts/
+extensions
 
 # Let's Encrypt certificates
 letsencrypt/
