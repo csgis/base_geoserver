@@ -26,6 +26,7 @@ services:
   # Example: Mount geoserver data from external location
   geoserver:
     volumes:
+      # - ./Caddyfile.no-wms_ows_post-blocking:/etc/caddy/Caddyfile:ro
       - ./geoserver-exts:/var/local/geoserver-exts/
       - geoserver_data:/var/local/geoserver
 
