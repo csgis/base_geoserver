@@ -4,7 +4,7 @@
 # Variables for https://hub.docker.com/r/kartoza/postgis/
 
 # Comma-separated list of databases to create
-POSTGRES_DB=geoserver,gwc
+POSTGRES_DB=osm,gwc
 
 # Database credentials - CHANGE THESE IN PRODUCTION!
 POSTGRES_USER=docker
