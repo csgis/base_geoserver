@@ -3,27 +3,18 @@
 }
 
 {$SITE_URL} {
-    # XXE-Schutz (CVE-2025-58360): Block dangerous methods on /wms
     @wms-block {
         path /geoserver/wms*
         method POST PUT PATCH DELETE
     }
     respond @wms-block "Method Not Allowed" 405
 
-    # XXE-Schutz: Block dangerous methods on /ows
     @ows-block {
         path /geoserver/ows*
         method POST PUT PATCH DELETE
     }
     respond @ows-block "Method Not Allowed" 405
 
-    reverse_proxy geoserver:8080 {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Proto {scheme}
-        header_up X-Forwarded-Host {host}
-    }
-
+    reverse_proxy geoserver:8080
     header -Server
 }
