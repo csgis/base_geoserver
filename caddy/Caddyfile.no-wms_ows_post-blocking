@@ -1,0 +1,8 @@
+{
+    email {$ADMIN_EMAIL}
+}
+
+{$SITE_URL} {
+    reverse_proxy geoserver:8080
+    header -Server
+}
