@@ -1,0 +1,39 @@
+# =============================================================================
+# CUSTOM OVERRIDES
+# =============================================================================
+# Copy this file to docker-compose.custom.yml and adjust as needed.
+#
+# Usage:
+#   docker-compose -f docker-compose.yml -f docker-compose.custom.yml up -d
+#
+# Or set in .env:
+#   COMPOSE_FILE=docker-compose.yml:docker-compose.custom.yml
+# =============================================================================
+
+version: '3.9'
+
+services:
+
+  # Example: Use a different geoserver image
+  # geoserver:
+  #   image: oscarfonts/geoserver
+
+  # Example: Expose additional ports
+  # geoserver:
+  #   ports:
+  #     - "8080:8080"
+
+  # Example: Mount geoserver data from external location
+  geoserver:
+    volumes:
+      - ./geoserver-exts:/var/local/geoserver-exts/
+      - geoserver_data:/var/local/geoserver
+
+volumes:
+  # Example: Bind mount to external storage
+  geoserver_data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/media/base_geoserver_geoserver_data/_data'
